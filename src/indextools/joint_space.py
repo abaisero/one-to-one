@@ -16,22 +16,22 @@ class _JointSpace_Base:
 class JointElem(Space.Elem):
     @property
     def idx(self):
-        indices = tuple(s.idx for s in self.elems.values())
+        indices = tuple(e.idx for e in self.etuple)
         return self.space._ravel_multi_index(indices)
 
     @idx.setter
     def idx(self, idx):
         try:
-            elems = self.elems.values()
+            etuple = self.etuple
         except AttributeError:
-            self.elems = self.space._etuple(idx)
+            self.etuple = self.space._etuple(idx)
         else:
             indices = self.space._unravel_index(idx)
-            for eidx, elem in zip(indices, elems):
+            for eidx, elem in zip(indices, etuple):
                 elem.idx = eidx
 
     def __getitem__(self, key):
-        return self.elems[key]
+        return self.etuple[key]
 
     # TODO when setting smth which is a subitem;  actually set a value!!
     # TODO to avoid item.p = value (instead of item.p.value = ...) bug
@@ -80,23 +80,23 @@ class JointNamedElem(Space.Elem):
 
     @property
     def idx(self):
-        indices = tuple(e.idx for e in self.elems.values())
+        indices = tuple(e.idx for e in self.edict.values())
         return self.space._ravel_multi_index(indices)
 
     @idx.setter
     def idx(self, idx):
         try:
-            elems = self.elems.values()
+            edict = self.edict.values()
         except AttributeError:
-            self.elems = self.space._edict(idx)
+            self.edict = self.space._edict(idx)
         else:
             indices = self.space._unravel_index(idx)
-            for eidx, elem in zip(indices, elems):
+            for eidx, elem in zip(indices, edict):
                 elem.idx = eidx
 
     def __getattr__(self, attr):
         try:
-            return super().__dict__['elems'][attr]
+            return super().__dict__['edict'][attr]
         except KeyError:
             raise AttributeError
 
