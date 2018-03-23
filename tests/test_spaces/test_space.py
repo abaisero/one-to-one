@@ -49,6 +49,11 @@ class SpaceTest(unittest.TestCase):
             e.idx = elem.idx
             self.assertEqual(e, elem)
 
+    def test_elem_index(self):
+        for e in self.space.elems:
+            self.assertEqual(e.__index__(), e.idx)
+            self.assertIsInstance(e.__index__(), int)
+
     def test_elem_equality(self):
         for elem in self.space.elems:
             copy = elem.copy()
