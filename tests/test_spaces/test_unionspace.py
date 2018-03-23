@@ -3,7 +3,7 @@ import unittest
 import indextools
 
 
-class UnionStaceTest(unittest.TestCase):
+class UnionSpaceTest(unittest.TestCase):
     def setUp(self):
         self.space = indextools.UnionSpace(
             indextools.BoolSpace(),
