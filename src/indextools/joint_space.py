@@ -80,7 +80,7 @@ class JointNamedElem(Space.Elem):
 
     @property
     def idx(self):
-        indices = tuple(s.idx for s in self.elems.values())
+        indices = tuple(e.idx for e in self.elems.values())
         return self.space._ravel_multi_index(indices)
 
     @idx.setter
