@@ -11,6 +11,9 @@ class Elem:
         self.space = space
         self.idx = idx
 
+    def __index__(self):
+        return self.idx
+
     @property
     def value(self):
         """Return element value."""
