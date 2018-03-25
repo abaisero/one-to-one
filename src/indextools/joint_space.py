@@ -7,7 +7,7 @@ import numpy as np
 
 class _JointSpace_Base:
     def _ravel_multi_index(self, indices):
-        return int(np.ravel_multi_index(indices, self._dims))
+        return np.ravel_multi_index(indices, self._dims)
 
     def _unravel_index(self, idx):
         return np.unravel_index(idx, self._dims)

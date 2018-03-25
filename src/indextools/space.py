@@ -12,7 +12,8 @@ class Elem:
         self.idx = idx
 
     def __index__(self):
-        return self.idx
+        # NOTE has to be very specific type (e.g. np.int64 not allowed)
+        return int(self.idx)
 
     @property
     def value(self):
