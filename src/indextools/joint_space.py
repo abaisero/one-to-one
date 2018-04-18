@@ -76,7 +76,8 @@ class JointSpace(Space, _JointSpace_Base):
 
 
 class JointNamedElem(Space.Elem):
-    """JointNamedSpace.Elem does not contain an explicit index;  Rather, it uses the indices of the chilren elems!"""
+    """JointNamedSpace.Elem does not contain an explicit index;  Rather, it
+    uses the indices of the chilren elems!"""
 
     @property
     def idx(self):
@@ -133,21 +134,19 @@ class JointNamedSpace(Space, _JointSpace_Base):
 
     def value(self, idx):
         indices = self._unravel_index(idx)
-        return types.SimpleNamespace(**{name: s.value(sidx)
-            for (name, s), sidx in zip(self.spaces.items(), indices)
-        })
+        return types.SimpleNamespace(
+            **{name: s.value(sidx)
+               for (name, s), sidx in zip(self.spaces.items(), indices)})
         # return self.JointNamedValue(**{name: s.value(sidx)
         #     for (name, s), sidx in zip(self.spaces.items(), indices)
         # })
 
     def idx(self, value):
         indices = tuple(s.idx(getattr(value, name))
-            for name, s in self.spaces.items()
-        )
+                        for name, s in self.spaces.items())
         return self._ravel_multi_index(indices)
 
     def _edict(self, idx):
         indices = self._unravel_index(idx)
         return {name: s.elem(sidx)
-            for (name, s), sidx in zip(self.spaces.items(), indices)
-        }
+                for (name, s), sidx in zip(self.spaces.items(), indices)}

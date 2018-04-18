@@ -23,7 +23,8 @@ class DomainSpace(Space):
         try:
             return self._indices[value]
         except KeyError:
-            raise ValueError(f'Invalid value ({value}) does not belong to this domain space.')
+            raise ValueError(f'Invalid value ({value}) does not belong to '
+                             'this domain space.')
 
 
 class BoolSpace(DomainSpace):

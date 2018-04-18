@@ -65,7 +65,7 @@ class SubSpace(Space):
 
     def idx(self, value):
         if not self.filter(value):
-            raise ValueError(f'Invalid value ({value}) does not satisfy filter.')
+            raise ValueError(f'Value ({value}) does not satisfy filter.')
         sidx = self.space.idx(value)
         return self._sidx_to_idx(sidx)
 

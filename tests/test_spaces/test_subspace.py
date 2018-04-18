@@ -6,7 +6,7 @@ import indextools
 class FactoryFilterTest(unittest.TestCase):
     @staticmethod
     def is_prime(n):
-        return n>1 and all(n%i!=0 for i in range(2, n))
+        return n > 1 and all(n % i != 0 for i in range(2, n))
 
     @staticmethod
     def is_palindrome(n):

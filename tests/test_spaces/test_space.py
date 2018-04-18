@@ -39,7 +39,7 @@ class SpaceTest(unittest.TestCase):
         for idx in range(self.space.nelems):
             with self.subTest(idx=idx):
                 vpos = self.space.value(idx)
-                vneg = self.space.value(idx-self.space.nelems)
+                vneg = self.space.value(idx - self.space.nelems)
                 self.assertEqual(vpos, vneg)
 
     def test_elem_idx(self):
@@ -81,12 +81,14 @@ class SpaceTest(unittest.TestCase):
                 for idx in range(space.nelems):
                     if idx != elem.idx:
                         with self.subTest(idx=idx):
-                            self.assertRaises(ValueError, space.elem, idx=idx, value=elem.value)
+                            self.assertRaises(ValueError, space.elem, idx=idx,
+                                              value=elem.value)
 
                 for value in space.values:
                     if value != elem.value:
                         with self.subTest(value=value):
-                            self.assertRaises(ValueError, space.elem, idx=elem.idx, value=value)
+                            self.assertRaises(ValueError, space.elem,
+                                              idx=elem.idx, value=value)
 
     def test_elem(self):
         values = 'abc'

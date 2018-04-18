@@ -25,7 +25,8 @@ class PowerSpace(Space):
         super().__init__()
 
         self._vlist = tuple(values)
-        self._vbits = {value: 1 << bit for bit, value in enumerate(self._vlist)}
+        self._vbits = {value: 1 << bit
+                       for bit, value in enumerate(self._vlist)}
         self._nbits = len(self._vlist)
         self.nelems = 1 << self._nbits
 

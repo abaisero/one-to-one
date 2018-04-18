@@ -74,7 +74,8 @@ class Space:
         :param value: The value of the element.
         :rtype: A :class:`Elem <Elem>`
         """
-        if idx is not None and value is not _novalue and self.value(idx) != value:
+        if idx is not None and value is not _novalue \
+                and self.value(idx) != value:
             raise ValueError(f'Index ({idx}) and value ({value}) do not match')
         if idx is None:
             idx = self.idx(value)
@@ -114,13 +115,14 @@ class Space:
     def _check_idx(self, idx):
         """Check index within range, and returns non-negative equivalent."""
         if not -self.nelems <= idx < self.nelems:
-            raise ValueError(f'Invalid index ({idx}) is outside of range [0, {self.nelems}).')
+            raise ValueError(f'Invalid index ({idx}) is outside of range '
+                             f'[0, {self.nelems}).')
         return idx % self.nelems
 
     def __contains__(self, other):
-        """Check whether ``other`` is an element or value of this indexing space."""
+        """Check whether `other` is element or value of this space."""
         return self.iselem(other) or self.isvalue(other)
 
     def __len__(self):
-        """Return number of elements in indexing space."""
+        """Return number of elements in this space."""
         return self.nelems

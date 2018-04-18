@@ -1,11 +1,11 @@
 from .space import Space
 
 import numpy as np
-import itertools as itt
 
 
 # TODO NamedUnionSpace?  to allow for conflicts?
-# this still won't work very well;  what if the subvalue spaces are different.. how to know how to use a subspace?!
+# this still won't work very well;  what if the subvalue spaces are different..
+# how to know how to use a subspace?!
 
 class UnionSpace(Space):
     def __init__(self, *spaces):
@@ -33,9 +33,9 @@ class UnionSpace(Space):
             except ValueError:
                 pass
             else:
-                return self._nelems_cumsum_m1[si] + space.idx(value)
+                return self._nelems_cumsum_m1[si] + sidx
 
-        raise ValueError(f'Invalid value ({value}) does not belong to any space.')
+        raise ValueError(f'Value ({value}) does not belong to any space.')
 
     def _si_sidx(self, idx):
         _idx_mask = idx < self._nelems_cumsum

@@ -16,7 +16,7 @@ class UnionSpaceTest(unittest.TestCase):
 
     def test_union_init_error(self):
         self.assertRaises(ValueError, indextools.UnionSpace,
-                indextools.BoolSpace(), indextools.BoolSpace())
+                          indextools.BoolSpace(), indextools.BoolSpace())
 
     def test_union_value(self):
         self.assertEqual(self.space.value(0), False)
