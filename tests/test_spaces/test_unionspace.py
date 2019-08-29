@@ -1,43 +1,32 @@
+import itertools as itt
 import unittest
 
 import indextools
 
+from .templates import templates
 
-class UnionSpaceTest(unittest.TestCase):
+
+class UnionBase(unittest.TestCase):
     def setUp(self):
-        self.space = indextools.UnionSpace(
+        self.space = self.new_space()
+
+    @staticmethod
+    def new_space():
+        return indextools.UnionSpace(
             indextools.BoolSpace(),
             indextools.DomainSpace('abc'),
-            indextools.RangeSpace(10, 20, 2),
+            indextools.RangeSpace(10, 14),
         )
 
-    def test_union_init(self):
-        self.assertEqual(self.space.nelems, 10)
+    @property
+    def values(self):
+        return itt.chain([False, True], 'abc', range(10, 14))
 
-    def test_union_init_error(self):
-        self.assertRaises(ValueError, indextools.UnionSpace,
-                          indextools.BoolSpace(), indextools.BoolSpace())
 
-    def test_union_value(self):
-        self.assertEqual(self.space.value(0), False)
-        self.assertEqual(self.space.value(1), True)
-        self.assertEqual(self.space.value(2), 'a')
-        self.assertEqual(self.space.value(3), 'b')
-        self.assertEqual(self.space.value(4), 'c')
-        self.assertEqual(self.space.value(5), 10)
-        self.assertEqual(self.space.value(6), 12)
-        self.assertEqual(self.space.value(7), 14)
-        self.assertEqual(self.space.value(8), 16)
-        self.assertEqual(self.space.value(9), 18)
+class UnionSpaceTest(UnionBase, templates.SpaceTest):
+    def test_nelems(self):
+        self.assertEqual(self.space.nelems, 9)
 
-    def test_union_idx(self):
-        self.assertEqual(self.space.idx(False), 0)
-        self.assertEqual(self.space.idx(True), 1)
-        self.assertEqual(self.space.idx('a'), 2)
-        self.assertEqual(self.space.idx('b'), 3)
-        self.assertEqual(self.space.idx('c'), 4)
-        self.assertEqual(self.space.idx(10), 5)
-        self.assertEqual(self.space.idx(12), 6)
-        self.assertEqual(self.space.idx(14), 7)
-        self.assertEqual(self.space.idx(16), 8)
-        self.assertEqual(self.space.idx(18), 9)
+
+class UnionElemTest(UnionBase, templates.ElemTest):
+    pass

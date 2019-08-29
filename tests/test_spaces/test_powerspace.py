@@ -1,19 +1,29 @@
 import unittest
 
+import more_itertools as mitt
+
 import indextools
 
+from .templates import templates
 
-class PowerSpaceTest(unittest.TestCase):
+
+class PowerBase(unittest.TestCase):
     def setUp(self):
-        self.space = indextools.PowerSpace('abc')
+        self.space = self.new_space()
 
-    def test_power_init(self):
+    @staticmethod
+    def new_space():
+        return indextools.PowerSpace('abc')
+
+    @property
+    def values(self):
+        return (set(v) for v in mitt.powerset('abc'))
+
+
+class PowerSpaceTest(PowerBase, templates.SpaceTest):
+    def test_nelems(self):
         self.assertEqual(self.space.nelems, 8)
 
-    def test_power_value(self):
-        self.assertEqual(self.space.value(0), set())
-        self.assertEqual(self.space.value(7), set('abc'))
 
-    def test_power_idx(self):
-        self.assertEqual(self.space.idx(set()), 0)
-        self.assertEqual(self.space.idx(set('abc')), 7)
+class PowerElemTest(PowerBase, templates.ElemTest):
+    pass

@@ -1,8 +1,9 @@
-from .space import Space
-
 # from collections import namedtuple
 import types
+
 import numpy as np
+
+from .space import Space
 
 
 class _JointSpace_Base:
@@ -61,6 +62,18 @@ class JointSpace(Space, _JointSpace_Base):
         return self.spaces[key]
 
     def idx(self, value):
+        try:
+            value = tuple(value)
+        except TypeError:
+            raise ValueError('Invalid value ({}) is not iterable'.format(value))
+
+        if len(value) != len(self.spaces):
+            raise ValueError(
+                'Invalid value ({}) should have {} elements'.format(
+                    value, len(self.spaces)
+                )
+            )
+
         indices = tuple(s.idx(v) for s, v in zip(self.spaces, value))
         return self._ravel_multi_index(indices)
 
@@ -133,20 +146,35 @@ class JointNamedSpace(Space, _JointSpace_Base):
             raise AttributeError
 
     def value(self, idx):
+        idx = self._check_idx(idx)
         indices = self._unravel_index(idx)
         return types.SimpleNamespace(
-            **{name: s.value(sidx)
-               for (name, s), sidx in zip(self.spaces.items(), indices)})
-        # return self.JointNamedValue(**{name: s.value(sidx)
+            **{
+                name: s.value(sidx)
+                for (name, s), sidx in zip(self.spaces.items(), indices)
+            }
+        )
+        # return self.JointNamedValue(**{
+        #     name: s.value(sidx)
         #     for (name, s), sidx in zip(self.spaces.items(), indices)
         # })
 
     def idx(self, value):
-        indices = tuple(s.idx(getattr(value, name))
-                        for name, s in self.spaces.items())
+        if not all(hasattr(value, name) for name in self.spaces):
+            raise ValueError(
+                'Invalid value ({}) does not have space attributes'.format(
+                    value
+                )
+            )
+
+        indices = tuple(
+            s.idx(getattr(value, name)) for name, s in self.spaces.items()
+        )
         return self._ravel_multi_index(indices)
 
     def _edict(self, idx):
         indices = self._unravel_index(idx)
-        return {name: s.elem(sidx)
-                for (name, s), sidx in zip(self.spaces.items(), indices)}
+        return {
+            name: s.elem(sidx)
+            for (name, s), sidx in zip(self.spaces.items(), indices)
+        }

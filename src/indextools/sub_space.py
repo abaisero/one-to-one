@@ -1,7 +1,6 @@
-from .space import Space
-
 import numpy as np
 
+from .space import Space
 
 # class SubElem(Space.Elem):
 #     def __init__(self, space, idx):
@@ -46,9 +45,9 @@ class SubSpace(Space):
         self.space = space
         self.filters = filters
 
-        _if = np.array([
-            [idx, self.filter(value)] for idx, value in space.items()
-        ])
+        _if = np.array(
+            [[idx, self.filter(value)] for idx, value in space.items()]
+        )
         _f = _if[:, 1].astype(bool)
 
         self._valid_indices = _if[_f, 0]
@@ -56,6 +55,11 @@ class SubSpace(Space):
         self.nelems = space.nelems - self._num_nonvalids_before[-1]
 
     def filter(self, value):
+        if not self.space.isvalue(value):
+            raise ValueError(
+                'Invalid value ({}) does not belong to space'.format(value)
+            )
+
         return all(f(value) for f in self.filters)
 
     def value(self, idx):
@@ -65,7 +69,9 @@ class SubSpace(Space):
 
     def idx(self, value):
         if not self.filter(value):
-            raise ValueError(f'Value ({value}) does not satisfy filter.')
+            raise ValueError(
+                'Invalid value ({}) does not satisfy filter'.format(value)
+            )
         sidx = self.space.idx(value)
         return self._sidx_to_idx(sidx)
 

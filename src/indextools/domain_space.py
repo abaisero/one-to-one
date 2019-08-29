@@ -11,45 +11,22 @@ class DomainSpace(Space):
         if len(set(domain)) != len(domain):
             raise ValueError('Domain should not have values which are equal.')
 
-        self.domain = tuple(domain)
-        self.nelems = len(self.domain)
-        self._indices = {value: idx for idx, value in enumerate(self.domain)}
+        self.__domain = tuple(domain)
+        self._indices = {value: idx for idx, value in enumerate(self.__domain)}
+
+    @property
+    def nelems(self):
+        return len(self.__domain)
 
     def value(self, idx):
-        return self.domain[idx]
+        return self.__domain[idx]
 
     def idx(self, value):
         """Return index corresponding to ``value``."""
         try:
             return self._indices[value]
         except KeyError:
-            raise ValueError(f'Invalid value ({value}) does not belong to '
-                             'this domain space.')
-
-
-class BoolSpace(DomainSpace):
-    def __init__(self):
-        """Alias for DomainSpace((False, True))."""
-        super().__init__((False, True))
-
-
-# Less efficient
-# class RangeSpace(DomainSpace):
-#     def __init__(self, *args):
-#         """Alias for DomainSpace(range(*args))."""
-#         super().__init__(range(*args))
-
-
-class RangeSpace(Space):
-    """More efficient than DomainSpace(range(*args))."""
-
-    def __init__(self, *args):
-        super().__init__()
-        self.domain = range(*args)
-        self.nelems = len(self.domain)
-
-    def value(self, idx):
-        return self.domain[idx]
-
-    def idx(self, value):
-        return self.domain.index(value)
+            raise ValueError(
+                'Invalid value ({}) does not belong to '
+                'this domain space.'.format(value)
+            )

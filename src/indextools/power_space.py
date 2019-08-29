@@ -25,8 +25,7 @@ class PowerSpace(Space):
         super().__init__()
 
         self._vlist = tuple(values)
-        self._vbits = {value: 1 << bit
-                       for bit, value in enumerate(self._vlist)}
+        self._vbits = {value: 1 << bit for bit, value in enumerate(self._vlist)}
         self._nbits = len(self._vlist)
         self.nelems = 1 << self._nbits
 
@@ -36,4 +35,9 @@ class PowerSpace(Space):
         return set(self._vlist[bit] for bit in bits)
 
     def idx(self, value):
+        try:
+            value = tuple(value)
+        except TypeError:
+            raise ValueError('Invalid value ({}) is not iterable'.format(value))
+
         return sum(self._vbits[v] for v in value)
