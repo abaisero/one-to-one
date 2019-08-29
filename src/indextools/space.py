@@ -33,10 +33,10 @@ class Elem:
         return self.space is other.space and self.idx == other.idx
 
     def __str__(self):
-        return 'Elem({})'.format(self.value)
+        return str(self.value)
 
     def __repr__(self):
-        return 'Elem({}: {})'.format(self.idx, self.value)
+        return f'Elem({self.idx}: {self.value})'
 
 
 class Space:
@@ -68,16 +68,14 @@ class Space:
             raise ValueError('Neither index nor value is given')
 
         if idx is not None and idx not in self.indices:
-            raise ValueError('Invalid index ({})'.format(idx))
+            raise ValueError(f'Invalid index ({self.idx})')
 
         if (
             idx is not None
             and value is not _novalue
             and self.value(idx) != value
         ):
-            raise ValueError(
-                'Index ({}) and value ({}) do not match'.format(idx, value)
-            )
+            raise ValueError(f'Index ({idx}) and value ({value}) do not match')
 
         idx = self.idx(value) if idx is None else idx
         return self.Elem(self, idx)  # NOTE this might be annoying for union...
@@ -140,7 +138,7 @@ class Space:
         """Check index within range, and returns non-negative equivalent."""
         if idx not in self.indices_ext:
             raise IndexError(
-                'Invalid index ({}) is outside {}'.format(idx, self.indices_ext)
+                f'Invalid index ({idx}) is outside {self.indices_ext}'
             )
         return idx % self.nelems
 

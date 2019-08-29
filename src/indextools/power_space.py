@@ -38,6 +38,6 @@ class PowerSpace(Space):
         try:
             value = tuple(value)
         except TypeError:
-            raise ValueError('Invalid value ({}) is not iterable'.format(value))
+            raise ValueError(f'Invalid value ({value}) is not iterable')
 
         return sum(self._vbits[v] for v in value)

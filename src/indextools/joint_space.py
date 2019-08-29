@@ -65,13 +65,11 @@ class JointSpace(Space, _JointSpace_Base):
         try:
             value = tuple(value)
         except TypeError:
-            raise ValueError('Invalid value ({}) is not iterable'.format(value))
+            raise ValueError(f'Invalid value ({value}) is not iterable')
 
         if len(value) != len(self.spaces):
             raise ValueError(
-                'Invalid value ({}) should have {} elements'.format(
-                    value, len(self.spaces)
-                )
+                f'Invalid value ({value}) should have {len(self.spaces)} elements'
             )
 
         indices = tuple(s.idx(v) for s, v in zip(self.spaces, value))
@@ -162,9 +160,7 @@ class JointNamedSpace(Space, _JointSpace_Base):
     def idx(self, value):
         if not all(hasattr(value, name) for name in self.spaces):
             raise ValueError(
-                'Invalid value ({}) does not have space attributes'.format(
-                    value
-                )
+                'Invalid value ({value}) does not have space attributes'
             )
 
         indices = tuple(

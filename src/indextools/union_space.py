@@ -37,7 +37,7 @@ class UnionSpace(Space):
                 return self._nelems_cumsum_m1[si] + sidx
 
         raise ValueError(
-            'Invalid value ({}) does not belong to any space.'.format(value)
+            f'Invalid value ({value}) does not belong to any space'
         )
 
     def _si_sidx(self, idx):
