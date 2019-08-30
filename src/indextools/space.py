@@ -1,3 +1,5 @@
+import warnings
+
 _novalue = object()  # singleton placeholder for optional inputs
 
 
@@ -26,8 +28,12 @@ class Elem:
         self.idx = self.space.idx(value)
 
     def __eq__(self, other):
-        """Check equality against other element or value."""
-        if not isinstance(other, type(self)):
+        """Check equality against other element."""
+        if not isinstance(other, Elem):
+            warnings.warn(
+                'Element comparison is restricted between Elem types; did you'
+                'intend to compare the respective values?'
+            )
             return NotImplemented
 
         return self.space is other.space and self.idx == other.idx
