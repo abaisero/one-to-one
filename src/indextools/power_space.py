@@ -2,16 +2,16 @@ from .space import Space
 
 
 class PowerElem(Space.Elem):
-    def update(self, *, include, exclude):
+    def update(self, *, include=(), exclude=()):
         include = set(include)
         exclude = set(exclude)
         self.value = (self.value - exclude) | (include - exclude)
 
     def include(self, value):
-        self.value |= value
+        self.value |= set(value)
 
     def exclude(self, value):
-        self.value -= value
+        self.value -= set(value)
 
 
 class PowerSpace(Space):
@@ -24,20 +24,18 @@ class PowerSpace(Space):
         """
         super().__init__()
 
-        self._vlist = tuple(values)
-        self._vbits = {value: 1 << bit for bit, value in enumerate(self._vlist)}
-        self._nbits = len(self._vlist)
-        self.nelems = 1 << self._nbits
+        values = set(values)
+        self.__bitmap = {v: 1 << i for i, v in enumerate(values)}
+        self.nelems = 1 << len(self.__bitmap)
 
     def value(self, idx):
         idx = self._check_idx(idx)
-        bits = (k for k in range(self._nbits) if idx >> k & 1)
-        return set(self._vlist[bit] for bit in bits)
+        return set(value for value, bit in self.__bitmap.items() if idx & bit)
 
     def idx(self, value):
         try:
-            value = tuple(value)
+            value = set(value)
         except TypeError:
             raise ValueError(f'Invalid value ({value}) is not iterable')
 
-        return sum(self._vbits[v] for v in value)
+        return sum(self.__bitmap[v] for v in value)

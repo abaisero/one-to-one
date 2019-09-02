@@ -1,3 +1,5 @@
+import unittest
+
 import indextools
 
 from .templates import templates
@@ -20,3 +22,8 @@ class DomainSpaceTest(DomainBase, templates.SpaceTest):
 
 class DomainElemTest(DomainBase, templates.ElemTest):
     pass
+
+
+class DomainOtherTests(unittest.TestCase):
+    def test_invalid_values(self):
+        self.assertRaises(TypeError, indextools.DomainSpace, [[1], [2], [3]])

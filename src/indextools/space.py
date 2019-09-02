@@ -17,6 +17,9 @@ class Elem:
         # NOTE has to be very specific type (e.g. np.int64 not allowed)
         return int(self.idx)
 
+    def __copy__(self):
+        return self.space.elem(self.idx)
+
     @property
     def value(self):
         """Return element value."""

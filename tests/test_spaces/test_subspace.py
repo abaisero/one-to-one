@@ -29,3 +29,8 @@ class SubSpaceTest(SubBase, templates.SpaceTest):
 
 class SubElemTest(SubBase, templates.ElemTest):
     pass
+
+
+class SubOtherTests(unittest.TestCase):
+    def test_invalid_values(self):
+        self.assertRaises(TypeError, indextools.SubSpace, object(), object())

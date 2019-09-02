@@ -1,52 +1,31 @@
-# from collections import namedtuple
-import types
+from collections import namedtuple
 
 import numpy as np
 
 from .space import Space
 
 
-class _JointSpace_Base:
-    def _ravel_multi_index(self, indices):
-        return np.ravel_multi_index(indices, self._dims)
-
-    def _unravel_index(self, idx):
-        return np.unravel_index(idx, self._dims)
-
-
 class JointElem(Space.Elem):
+    def __init__(self, space, idx):
+        self._etuple = space.etuple(idx)
+        super().__init__(space, idx)
+
     @property
     def idx(self):
-        indices = tuple(e.idx for e in self.etuple)
-        return self.space._ravel_multi_index(indices)
+        indices = tuple(e.idx for e in self._etuple)
+        return self.space.ravel_multi_index(indices)
 
     @idx.setter
     def idx(self, idx):
-        try:
-            etuple = self.etuple
-        except AttributeError:
-            self.etuple = self.space._etuple(idx)
-        else:
-            indices = self.space._unravel_index(idx)
-            for eidx, elem in zip(indices, etuple):
-                elem.idx = eidx
+        indices = self.space.unravel_index(idx)
+        for eidx, elem in zip(indices, self._etuple):
+            elem.idx = eidx
 
     def __getitem__(self, key):
-        return self.etuple[key]
-
-    # TODO when setting smth which is a subitem;  actually set a value!!
-    # TODO to avoid item.p = value (instead of item.p.value = ...) bug
-    # def __setattribute__(self, name, value):
-    #     # TODO if
-    #     if name in super().__dict__['imap']:
-    #         getattr(self, name).value = value
-    #     else:
-    #     try:
-    #         super().__dict__['imap'][name]
-    #     except KeyError
+        return self._etuple[key]
 
 
-class JointSpace(Space, _JointSpace_Base):
+class JointSpace(Space):
     Elem = JointElem
 
     def __init__(self, *spaces):
@@ -54,12 +33,21 @@ class JointSpace(Space, _JointSpace_Base):
 
         :param *spaces: Spaces.
         """
-        self.spaces = spaces
-        self._dims = tuple(s.nelems for s in spaces)
-        self.nelems = np.prod(self._dims)
+        if not all(isinstance(space, Space) for space in spaces):
+            raise TypeError('All inputs should be Spaces')
+
+        self.__spaces = spaces
+        self.__shape = tuple(s.nelems for s in spaces)
+        self.nelems = np.prod(self.__shape)
+
+    def ravel_multi_index(self, indices):
+        return np.ravel_multi_index(indices, self.__shape)
+
+    def unravel_index(self, idx):
+        return np.unravel_index(idx, self.__shape)
 
     def __getitem__(self, key):
-        return self.spaces[key]
+        return self.__spaces[key]
 
     def idx(self, value):
         try:
@@ -67,64 +55,31 @@ class JointSpace(Space, _JointSpace_Base):
         except TypeError:
             raise ValueError(f'Invalid value ({value}) is not iterable')
 
-        if len(value) != len(self.spaces):
+        if len(value) != len(self.__spaces):
             raise ValueError(
-                f'Invalid value ({value}) should have {len(self.spaces)} elements'
+                f'Invalid value ({value}) should have {len(self.__spaces)} elements'
             )
 
-        indices = tuple(s.idx(v) for s, v in zip(self.spaces, value))
-        return self._ravel_multi_index(indices)
+        indices = tuple(s.idx(v) for s, v in zip(self.__spaces, value))
+        return self.ravel_multi_index(indices)
 
     def value(self, idx):
         idx = self._check_idx(idx)
-        indices = self._unravel_index(idx)
-        return tuple(s.value(sidx) for s, sidx in zip(self.spaces, indices))
+        indices = self.unravel_index(idx)
+        return tuple(s.value(sidx) for s, sidx in zip(self.__spaces, indices))
 
-    def _etuple(self, idx):
+    def etuple(self, idx):
         idx = self._check_idx(idx)
-        indices = self._unravel_index(idx)
-        return tuple(s.elem(sidx) for s, sidx in zip(self.spaces, indices))
+        indices = self.unravel_index(idx)
+        return tuple(s.elem(sidx) for s, sidx in zip(self.__spaces, indices))
 
 
-class JointNamedElem(Space.Elem):
-    """JointNamedSpace.Elem does not contain an explicit index;  Rather, it
-    uses the indices of the chilren elems!"""
-
-    @property
-    def idx(self):
-        indices = tuple(e.idx for e in self.edict.values())
-        return self.space._ravel_multi_index(indices)
-
-    @idx.setter
-    def idx(self, idx):
-        try:
-            edict = self.edict.values()
-        except AttributeError:
-            self.edict = self.space._edict(idx)
-        else:
-            indices = self.space._unravel_index(idx)
-            for eidx, elem in zip(indices, edict):
-                elem.idx = eidx
-
+class JointNamedElem(JointElem):
     def __getattr__(self, attr):
-        try:
-            return super().__dict__['edict'][attr]
-        except KeyError:
-            raise AttributeError
-
-    # TODO when setting smth which is a subitem;  actually set a value!!
-    # TODO to avoid item.p = value (instead of item.p.value = ...) bug
-    # def __setattribute__(self, name, value):
-    #     # TODO if
-    #     if name in super().__dict__['imap']:
-    #         getattr(self, name).value = value
-    #     else:
-    #     try:
-    #         super().__dict__['imap'][name]
-    #     except KeyError
+        return getattr(self._etuple, attr)
 
 
-class JointNamedSpace(Space, _JointSpace_Base):
+class JointNamedSpace(Space):
     Elem = JointNamedElem
 
     def __init__(self, **spaces):
@@ -132,45 +87,55 @@ class JointNamedSpace(Space, _JointSpace_Base):
 
         :param **spaces: Named spaces.
         """
-        self.spaces = spaces
-        self._dims = tuple(s.nelems for s in spaces.values())
-        self.nelems = np.prod(self._dims)
-        # self.JointNamedValue = namedtuple('JointNamedValue', spaces.keys())
+        if not all(isinstance(space, Space) for space in spaces.values()):
+            raise TypeError('All inputs should be Spaces')
+
+        self.__spaces = spaces
+        self.__shape = tuple(s.nelems for s in spaces.values())
+        self.nelems = np.prod(self.__shape)
+        self.Value = namedtuple('Value', spaces.keys())
+
+    def ravel_multi_index(self, indices):
+        return np.ravel_multi_index(indices, self.__shape)
+
+    def unravel_index(self, idx):
+        return np.unravel_index(idx, self.__shape)
 
     def __getattr__(self, attr):
         try:
-            return self.spaces[attr]
+            return self.__spaces[attr]
         except KeyError:
             raise AttributeError
 
+    def idx(self, value):
+        try:
+            value = tuple(value)
+        except TypeError:
+            raise ValueError(f'Invalid value ({value})')
+
+        # if not all(hasattr(value, k) for k in self.__spaces):
+        #     raise ValueError(
+        #         f'Invalid value ({value}) does not have the space attributes '
+        #         f'{tuple(self.__spaces.keys())}'
+        #     )
+
+        indices = tuple(s.idx(v) for s, v in zip(self.__spaces.values(), value))
+        return self.ravel_multi_index(indices)
+
     def value(self, idx):
         idx = self._check_idx(idx)
-        indices = self._unravel_index(idx)
-        return types.SimpleNamespace(
-            **{
-                name: s.value(sidx)
-                for (name, s), sidx in zip(self.spaces.items(), indices)
-            }
-        )
-        # return self.JointNamedValue(**{
-        #     name: s.value(sidx)
-        #     for (name, s), sidx in zip(self.spaces.items(), indices)
-        # })
-
-    def idx(self, value):
-        if not all(hasattr(value, name) for name in self.spaces):
-            raise ValueError(
-                'Invalid value ({value}) does not have space attributes'
-            )
-
-        indices = tuple(
-            s.idx(getattr(value, name)) for name, s in self.spaces.items()
-        )
-        return self._ravel_multi_index(indices)
-
-    def _edict(self, idx):
-        indices = self._unravel_index(idx)
-        return {
-            name: s.elem(sidx)
-            for (name, s), sidx in zip(self.spaces.items(), indices)
+        indices = self.unravel_index(idx)
+        vdict = {
+            k: s.value(sidx)
+            for (k, s), sidx in zip(self.__spaces.items(), indices)
         }
+        return self.Value(**vdict)
+
+    def etuple(self, idx):
+        idx = self._check_idx(idx)
+        indices = self.unravel_index(idx)
+        edict = {
+            k: s.elem(sidx)
+            for (k, s), sidx in zip(self.__spaces.items(), indices)
+        }
+        return self.Value(**edict)

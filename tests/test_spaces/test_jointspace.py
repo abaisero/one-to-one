@@ -1,5 +1,4 @@
 import itertools as itt
-import types
 import unittest
 
 import indextools
@@ -7,7 +6,7 @@ import indextools
 from .templates import templates
 
 
-class JointBase(unittest.TestCase):
+class JointBase:
     def setUp(self):
         self.spaces = (
             indextools.BoolSpace(),
@@ -36,7 +35,6 @@ class JointSpaceTest(JointBase, templates.SpaceTest):
         self.assertIs(self.space[1], self.spaces[1])
         self.assertIs(self.space[2], self.spaces[2])
 
-    def test_getitem_error(self):
         self.assertRaises(IndexError, self.space.__getitem__, -4)
         self.assertRaises(IndexError, self.space.__getitem__, 3)
 
@@ -62,7 +60,7 @@ class JointNamedBase(unittest.TestCase):
     @property
     def values(self):
         for a, b, c in itt.product([False, True], 'abc', range(4)):
-            yield types.SimpleNamespace(a=a, b=b, c=c)
+            yield (a, b, c)
 
 
 class JointNamedSpaceTest(JointNamedBase, templates.SpaceTest):
@@ -83,3 +81,11 @@ class JointNamedSpaceTest(JointNamedBase, templates.SpaceTest):
             self.assertTrue(self.spaces['a'].iselem(e.a))
             self.assertTrue(self.spaces['b'].iselem(e.b))
             self.assertTrue(self.spaces['c'].iselem(e.c))
+
+
+class JointOtherTests(unittest.TestCase):
+    def test_invalid_values(self):
+        self.assertRaises(TypeError, indextools.JointSpace, object(), object())
+        self.assertRaises(
+            TypeError, indextools.JointNamedSpace, a=object(), b=object()
+        )
