@@ -19,6 +19,5 @@ setup(
     packages=['indextools'],
     package_dir={'': 'src'},
     test_suite='tests',
-    install_requires=['numpy'],
     license='MIT',
 )
