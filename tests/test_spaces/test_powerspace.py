@@ -2,7 +2,7 @@ import unittest
 
 import more_itertools as mitt
 
-import indextools
+import one_to_one
 
 from .templates import templates
 
@@ -13,7 +13,7 @@ class PowerBase(unittest.TestCase):
 
     @staticmethod
     def new_space():
-        return indextools.PowerSpace('abc')
+        return one_to_one.PowerSpace('abc')
 
     @property
     def values(self):

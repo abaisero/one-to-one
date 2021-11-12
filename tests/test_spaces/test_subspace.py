@@ -1,6 +1,6 @@
 import unittest
 
-import indextools
+import one_to_one
 
 from .templates import templates
 
@@ -15,7 +15,7 @@ class SubBase(unittest.TestCase):
 
     @staticmethod
     def new_space():
-        return indextools.SubSpace(indextools.RangeSpace(50), is_prime)
+        return one_to_one.SubSpace(one_to_one.RangeSpace(50), is_prime)
 
     @property
     def values(self):
@@ -33,4 +33,4 @@ class SubElemTest(SubBase, templates.ElemTest):
 
 class SubOtherTests(unittest.TestCase):
     def test_invalid_values(self):
-        self.assertRaises(TypeError, indextools.SubSpace, object(), object())
+        self.assertRaises(TypeError, one_to_one.SubSpace, object(), object())

@@ -1,6 +1,6 @@
 import unittest
 
-import indextools
+import one_to_one
 
 from .templates import templates
 
@@ -8,7 +8,7 @@ from .templates import templates
 class BoolBase:
     @staticmethod
     def new_space():
-        return indextools.BoolSpace()
+        return one_to_one.BoolSpace()
 
     @property
     def values(self):

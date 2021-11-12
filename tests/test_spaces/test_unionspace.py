@@ -1,7 +1,7 @@
 import itertools as itt
 import unittest
 
-import indextools
+import one_to_one
 
 from .templates import templates
 
@@ -12,10 +12,10 @@ class UnionBase(unittest.TestCase):
 
     @staticmethod
     def new_space():
-        return indextools.UnionSpace(
-            indextools.BoolSpace(),
-            indextools.DomainSpace('abc'),
-            indextools.RangeSpace(10, 14),
+        return one_to_one.UnionSpace(
+            one_to_one.BoolSpace(),
+            one_to_one.DomainSpace('abc'),
+            one_to_one.RangeSpace(10, 14),
         )
 
     @property

@@ -1,4 +1,4 @@
-# indextools This package provides classes which implement bijective mappings
+# one_to_one This package provides classes which implement bijective mappings
 between sequential indices and structured values.
 
 ## Why

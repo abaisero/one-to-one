@@ -1,6 +1,6 @@
 import unittest
 
-import indextools
+import one_to_one
 
 
 def is_palindrome(n):
@@ -10,8 +10,8 @@ def is_palindrome(n):
 
 class PalindromeTest(unittest.TestCase):
     def test_palindromes(self):
-        int_space = indextools.RangeSpace(100, 200)
-        palindrome_space = indextools.SubSpace(int_space, is_palindrome)
+        int_space = one_to_one.RangeSpace(100, 200)
+        palindrome_space = one_to_one.SubSpace(int_space, is_palindrome)
         values = (101, 111, 121, 131, 141, 151, 161, 171, 181, 191)
 
         self.assertEqual(palindrome_space.nelems, len(values))

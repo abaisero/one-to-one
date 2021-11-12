@@ -1,7 +1,7 @@
 import itertools as itt
 import unittest
 
-import indextools
+import one_to_one
 
 from .templates import templates
 
@@ -9,14 +9,14 @@ from .templates import templates
 class JointBase:
     def setUp(self):
         self.spaces = (
-            indextools.BoolSpace(),
-            indextools.DomainSpace('abc'),
-            indextools.RangeSpace(4),
+            one_to_one.BoolSpace(),
+            one_to_one.DomainSpace('abc'),
+            one_to_one.RangeSpace(4),
         )
         super().setUp()
 
     def new_space(self):
-        return indextools.JointSpace(*self.spaces)
+        return one_to_one.JointSpace(*self.spaces)
 
     @property
     def values(self):
@@ -48,14 +48,14 @@ class JointSpaceTest(JointBase, templates.SpaceTest):
 class JointNamedBase(unittest.TestCase):
     def setUp(self):
         self.spaces = dict(
-            a=indextools.BoolSpace(),
-            b=indextools.DomainSpace('abc'),
-            c=indextools.RangeSpace(4),
+            a=one_to_one.BoolSpace(),
+            b=one_to_one.DomainSpace('abc'),
+            c=one_to_one.RangeSpace(4),
         )
         super().setUp()
 
     def new_space(self):
-        return indextools.JointNamedSpace(**self.spaces)
+        return one_to_one.JointNamedSpace(**self.spaces)
 
     @property
     def values(self):
@@ -85,7 +85,7 @@ class JointNamedSpaceTest(JointNamedBase, templates.SpaceTest):
 
 class JointOtherTests(unittest.TestCase):
     def test_invalid_values(self):
-        self.assertRaises(TypeError, indextools.JointSpace, object(), object())
+        self.assertRaises(TypeError, one_to_one.JointSpace, object(), object())
         self.assertRaises(
-            TypeError, indextools.JointNamedSpace, a=object(), b=object()
+            TypeError, one_to_one.JointNamedSpace, a=object(), b=object()
         )

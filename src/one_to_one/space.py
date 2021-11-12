@@ -64,8 +64,8 @@ class Space:
 
         Usage::
 
-            >>> import indextools
-            >>> space = indextools.DomainSpace(('red', 'green', 'blue'))
+            >>> import one_to_one
+            >>> space = one_to_one.DomainSpace(('red', 'green', 'blue'))
             >>> elem = space.elem(1)
             >>> elem = space.elem(value='red')
 
